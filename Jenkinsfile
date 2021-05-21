@@ -9,8 +9,8 @@
 //      events-feed-cluster 
 //      us-central1-a
 //      the following values can be found in the yaml:
-//      demo-api
-//      demo-api (in the template/spec section of the deployment)
+//      demo-web
+//      demo-web (in the template/spec section of the deployment)
 
 pipeline {
     agent any 
@@ -50,7 +50,7 @@ pipeline {
             steps {
                 echo "build id = ${env.BUILD_ID}"
                 echo 'Tests passed on to build Docker container'
-                sh "gcloud builds submit -t gcr.io/may2021-dtc210/web-server-image:v2.${env.BUILD_ID} ."
+                sh "gcloud builds submit -t gcr.io/may2021-dtc210/web-server-image:v3.${env.BUILD_ID} ."
             }
         }        
          stage('Stage 5') {
@@ -59,7 +59,7 @@ pipeline {
                 sh 'gcloud container clusters get-credentials events-feed-cluster --zone us-central1-a --project may2021-dtc210'
                 echo 'Update the image'
                 echo "gcr.io/may2021-dtc210/web-server-image:2.${env.BUILD_ID}"
-                sh "kubectl set image deployment/demo-api demo-api=gcr.io/may2021-dtc210/web-server-image:v2.${env.BUILD_ID} --record"
+                sh "kubectl set image deployment/events-web-server-deployment events-web-server=gcr.io/may2021-dtc210/web-server-image:v3.${env.BUILD_ID} --record -n events"
             }
         }
     }
